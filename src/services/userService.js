@@ -80,6 +80,7 @@ let getAllUser = (userId) => {
                     }
                 })
             }
+            console.log('user service', users)
             resolve(users)
         } catch (error) {
             reject(error)
@@ -165,8 +166,8 @@ let deleteUserById = (userId) => {
 }
 
 let updateUserById = (data) => {
+    console.log('check data ba', data.id)
     return new Promise(async (resolve, reject) => {
-        console.log(data)
         try {
             let user = await db.User.findOne({
                 where: { id: data.id }
@@ -197,10 +198,36 @@ let updateUserById = (data) => {
     })
 }
 
+let getAllCodeService = (typeInput) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!typeInput) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing required parameters'
+                })
+            }
+            else {
+                let res = {};
+                let allcode = await db.Allcode.findAll({
+                    where: { type: typeInput }
+                })
+                res.errCode = 0
+                res.data = allcode
+                resolve(res)
+
+            }
+        } catch (error) {
+            reject(error)
+        }
+    })
+}
+
 module.exports = {
     handleUserLogin: handleUserLogin,
     getAllUser: getAllUser,
     createNewUser: createNewUser,
     deleteUserById: deleteUserById,
-    updateUserById: updateUserById
+    updateUserById: updateUserById,
+    getAllCodeService: getAllCodeService
 }

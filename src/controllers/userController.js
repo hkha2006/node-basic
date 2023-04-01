@@ -26,7 +26,7 @@ let handleGetAllUser = async (req, res) => {
     // let id = req.body.id; //ALL || Id
     let id = req.query.id;
     let users = await userService.getAllUser(id);
-    console.log(users)
+    console.log('user controller', users)
     return res.status(200).json({
         errCode: 0,
         errMessage: 'OK',
@@ -48,7 +48,7 @@ let handleDeleteUser = async (req, res) => {
     else {
         return res.status(200).json({
             errCode: 1,
-            errMessage: 'Missing para'
+            errMessage: 'Missing para',
         })
     }
 }
@@ -57,11 +57,26 @@ let handleUpdateUser = async (req, res) => {
     return res.status(200).json(message)
 }
 
+let getAllCode = async (req, res) => {
+    try {
+        let data = await userService.getAllCodeService(req.query.type);
+        return res.status(200).json(data)
+
+    } catch (error) {
+        console.log('get all code error', error)
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Error from server'
+        })
+    }
+}
+
 
 module.exports = {
     handleLogin: handleLogin,
     handleGetAllUser: handleGetAllUser,
     handleCreateNewUser: handleCreateNewUser,
     handleDeleteUser: handleDeleteUser,
-    handleUpdateUser: handleUpdateUser
+    handleUpdateUser: handleUpdateUser,
+    getAllCode: getAllCode
 }
