@@ -80,7 +80,7 @@ let getAllUser = (userId) => {
                     }
                 })
             }
-            console.log('user service', users)
+            // console.log('user service', users)
             resolve(users)
         } catch (error) {
             reject(error)
@@ -109,7 +109,8 @@ let createNewUser = async (data) => {
                     phonenumber: data.phonenumber,
                     gender: data.gender,
                     roleId: data.roleId,
-                    positionId: data.positionId
+                    positionId: data.positionId,
+                    image: data.image
                 })
                 resolve({
                     errCode: 0,
@@ -167,7 +168,7 @@ let deleteUserById = (userId) => {
 }
 
 let updateUserById = (data) => {
-    console.log('check data ba', data.id)
+    console.log('check data ba', data)
     return new Promise(async (resolve, reject) => {
         try {
             let user = await db.User.findOne({
@@ -176,14 +177,19 @@ let updateUserById = (data) => {
             if (!user) {
                 resolve({
                     errCode: 2,
-                    message: 'User is not exist'
+                    message: 'User is not exist edit'
                 });
             } else {
                 await db.User.update(
                     {
                         firstName: data.firstName,
                         lastName: data.lastName,
-                        address: data.address
+                        address: data.address,
+                        roleId: data.roleId,
+                        positionId: data.positionId,
+                        gender: data.gender,
+                        phonenumber: data.phonenumber,
+                        image: data.image
                     },
                     { where: { id: data.id } }
 

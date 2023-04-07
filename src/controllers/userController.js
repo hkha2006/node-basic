@@ -26,7 +26,7 @@ let handleGetAllUser = async (req, res) => {
     // let id = req.body.id; //ALL || Id
     let id = req.query.id;
     let users = await userService.getAllUser(id);
-    console.log('user controller', users)
+    // console.log('user controller', users)
     return res.status(200).json({
         errCode: 0,
         errMessage: 'OK',
