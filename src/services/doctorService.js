@@ -1,6 +1,6 @@
 import db from "../models/index"
 require('dotenv').config()
-import _ from 'lodash';
+import _, { reject } from 'lodash';
 
 const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE
 let getTopDoctorHome = (limit) => {
@@ -161,16 +161,9 @@ let bulkCreateSchedule = (data) => {
                     }
 
                 )
-                // convert date
-                if (existing && existing.length > 0) {
-                    existing = existing.map(item => {
-                        item.date = new Date(item.date).getTime()
-                        return item
-                    })
-                }
                 //compare different
                 let toCreate = _.differenceWith(schedule, existing, (a, b) => {
-                    return a.timeType === b.timeType && a.date === b.date
+                    return a.timeType === b.timeType && +a.date === +b.date
                 })
                 console.log('check existing', existing);
                 console.log('check create', toCreate);
@@ -194,10 +187,48 @@ let bulkCreateSchedule = (data) => {
     })
 }
 
+let getScheduleByDate = (doctorId, date) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!doctorId || !date) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing para'
+                })
+            }
+            else {
+                let data = await db.Schedule.findAll({
+                    where: {
+                        doctorId: doctorId,
+                        date: date
+                    },
+                    include: [
+                        {
+                            model: db.Allcode, as: 'timeTypeData',
+                            attributes: ['valueEn', 'valueVi',]
+                        },
+                    ]
+                    ,
+                    raw: false,
+                    nest: true
+                })
+                if (!data) data = []
+                resolve({
+                    errCode: 0,
+                    data: data
+                })
+            }
+        } catch (error) {
+            reject(error)
+        }
+    })
+}
+
 module.exports = {
     getTopDoctorHome: getTopDoctorHome,
     getAllDoctors: getAllDoctors,
     saveInforDoctor: saveInforDoctor,
     getDetailDoctorById: getDetailDoctorById,
-    bulkCreateSchedule
+    bulkCreateSchedule,
+    getScheduleByDate
 }
