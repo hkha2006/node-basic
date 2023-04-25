@@ -1,5 +1,6 @@
 import db from "../models/index"
 require('dotenv').config()
+import _ from 'lodash';
 
 const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE
 let getTopDoctorHome = (limit) => {
@@ -248,6 +249,10 @@ let getScheduleByDate = (doctorId, date) => {
                         {
                             model: db.Allcode, as: 'timeTypeData',
                             attributes: ['valueEn', 'valueVi',]
+                        },
+                        {
+                            model: db.User, as: 'doctorData',
+                            attributes: ['firstName', 'lastName',]
                         },
                     ]
                     ,
