@@ -47,7 +47,67 @@ let getAllSpecialties = () => {
     })
 }
 
+let getDetailSpecialtyById = (inputId, location) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!inputId || !location) {
+                resolve({
+                    errCode: 1,
+                    errMess: 'Missing Parameter'
+                })
+            }
+            else {
+                let data = await db.Specialty.findOne({
+                    where: {
+                        id: inputId
+                    },
+                    attributes: ['descriptionHTML', 'descriptionMarkdown']
+                })
+
+                if (data) {
+                    let doctorsSepcialty = []
+                    console.log('check location', location);
+                    if (location === 'ALL') {
+
+                        doctorsSepcialty = await db.Doctor_Infor.findAll({
+                            logging: console.log,
+                            where: { specialtyId: inputId },
+                            attributes: ['doctorId', 'provinceId']
+                        })
+                    }
+                    if (location !== 'ALL') {
+                        console.log('check another case');
+                        doctorsSepcialty = await db.Doctor_Infor.findAll({
+                            logging: console.log,
+                            where: {
+                                specialtyId: inputId,
+                                provinceId: location
+                            },
+                            attributes: ['doctorId', 'provinceId']
+                        })
+                    }
+
+                    data.doctorsSepcialty = doctorsSepcialty
+                }
+                else {
+                    data = {}
+                }
+                resolve({
+                    errCode: 0,
+                    errMess: "OK",
+                    data
+                })
+
+
+            }
+        } catch (error) {
+            reject(error)
+        }
+    })
+}
+
 module.exports = {
     createSpecailty,
-    getAllSpecialties
+    getAllSpecialties,
+    getDetailSpecialtyById
 }
