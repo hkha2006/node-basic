@@ -1,6 +1,6 @@
 import db from "../models/index"
 require('dotenv').config()
-import _ from 'lodash';
+import _, { reject } from 'lodash';
 
 const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE
 let getTopDoctorHome = (limit) => {
@@ -117,6 +117,7 @@ let saveInforDoctor = (inputData) => {
                     doctorInfor.nameClinic = inputData.nameClinic
                     doctorInfor.addressClinic = inputData.addressClinic
                     doctorInfor.note = inputData.note
+                    doctorInfor.clinicId = inputData.clinicId
                     doctorInfor.specialtyId = inputData.specialtyId
                     await doctorInfor.save()
                 } else {
@@ -391,6 +392,48 @@ let getProfileDoctorById = (doctorId) => {
     })
 }
 
+let getListPatientForDoctor = (doctorId, date) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!doctorId || !date) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing para'
+                })
+            } else {
+                let data = await db.Booking.findAll({
+                    where: {
+                        statusId: 'S2',
+                        doctorId: doctorId,
+                        date: date
+                    },
+                    include: [
+                        {
+                            model: db.User, as: 'patientData',
+                            attributes: ['email', 'firstName', 'address', 'gender'],
+                            include: [
+                                { model: db.Allcode, as: 'genderData', attributes: ['valueEn', 'valueVi'] },
+                            ]
+                        },
+                        {
+                            model: db.Allcode, as: 'timeTypeDataPatient', attributes: ['valueEn', 'valueVi']
+                        }
+                    ],
+                    raw: false,
+                    nest: true
+                })
+                if (!data) data = {}
+                resolve({
+                    errCode: 0,
+                    data: data
+                })
+            }
+        } catch (error) {
+            reject(error)
+        }
+    })
+}
+
 module.exports = {
     getTopDoctorHome: getTopDoctorHome,
     getAllDoctors: getAllDoctors,
@@ -399,5 +442,6 @@ module.exports = {
     bulkCreateSchedule,
     getScheduleByDate,
     getExtraInforDoctorById,
-    getProfileDoctorById
+    getProfileDoctorById,
+    getListPatientForDoctor
 }
