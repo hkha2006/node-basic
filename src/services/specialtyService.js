@@ -66,7 +66,6 @@ let getDetailSpecialtyById = (inputId, location) => {
 
                 if (data) {
                     let doctorsSepcialty = []
-                    console.log('check location', location);
                     if (location === 'ALL') {
 
                         doctorsSepcialty = await db.Doctor_Infor.findAll({
@@ -76,7 +75,6 @@ let getDetailSpecialtyById = (inputId, location) => {
                         })
                     }
                     if (location !== 'ALL') {
-                        console.log('check another case');
                         doctorsSepcialty = await db.Doctor_Infor.findAll({
                             logging: console.log,
                             where: {
