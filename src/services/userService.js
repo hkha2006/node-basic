@@ -80,7 +80,6 @@ let getAllUser = (userId) => {
                     }
                 })
             }
-            // console.log('user service', users)
             resolve(users)
         } catch (error) {
             reject(error)
@@ -168,7 +167,6 @@ let deleteUserById = (userId) => {
 }
 
 let updateUserById = (data) => {
-    console.log('check data ba', data)
     return new Promise(async (resolve, reject) => {
         try {
             let user = await db.User.findOne({
